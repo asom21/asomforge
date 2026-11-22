@@ -1,16 +1,21 @@
 # AsomForge
 
-**AsomForge 是一个 Agent 组织与协作平台。** 用户在画布上定义角色、能力和协作关系，平台按照约定执行任务、交接产物、处理人工补充并保留运行历史。
+<!-- 说明项目现状、目录、启动方式和验证命令。 -->
+
+**AsomForge 是面向个人本地使用的 Agent 组织与协作平台。** 配置中心管理可复用资源，运行界面通过画布组织 Agent，平台按照约定执行任务、交接产物、处理人工补充并保留运行历史。
 
 ## 当前状态
 
-本仓库处于工程骨架阶段，包含目录、说明文档和开发约定。尚未生成应用入口、页面、接口、执行引擎、数据库模型或测试实现，当前不能启动运行。
+当前已实现配置中心前后端：五类配置可新增、编辑、删除、导入和独立检查，数据保存在本机文件中。Tool 仅保留入口。画布、Agent 执行、调度与恢复引擎尚未实现。
+
+第一阶段已确定为配置中心闭环：使用本地文件保存和管理 Skill、MCP、Prompt、大模型和运行平台配置，支持导入及适用的校验与连通性测试。Tool 保留导航和目录位置，暂不实现。后续功能分阶段设计、验证和验收。
 
 ## 项目资料
 
 - [项目介绍](./AsomForge-项目介绍.md)：面向初次了解项目的读者。
 - [项目说明与架构设计](./AsomForge-项目说明与架构设计.md)：产品边界、逻辑架构与核心概念。
 - [工程结构](./docs/architecture/project-structure.md)：目录职责和模块依赖方向。
+- [本地数据目录](./doc/README.md)：配置、私密数据和日志的固定目录约定。
 - [技术路线](./docs/decisions/technology-direction.md)：已选择的语言方向与待确认的技术建议。
 - [Agent 开发协作规范](./AGENTS.md)：后续代码助手需要遵循的项目约定。
 
@@ -49,6 +54,11 @@ AsomForge/
 │   └── tests/
 │       ├── unit/
 │       └── integration/
+├── doc/                      # 本地数据；除目录说明外不提交
+│   ├── README.md             # 固定目录与保存约定
+│   ├── config/               # 按资源类型保存配置与资源
+│   ├── private/              # 本机私密数据
+│   └── logs/                 # 本地应用日志
 └── docs/
     ├── README.md
     ├── architecture/         # 工程与系统设计
@@ -60,16 +70,40 @@ AsomForge/
 
 ## 技术方向
 
-采用 TypeScript 前端与 Python 后端，在一个仓库中维护。React、Vite、React Flow、FastAPI 等为当前建议，具体依赖与版本尚未落地。
+采用 React、TypeScript、Vite 前端与 Python、FastAPI、Pydantic 后端，在一个仓库中维护。pnpm 与 uv 分别管理依赖，版本由锁文件固定。React Flow 和执行编排框架尚未引入。
 
-本机运行和服务器部署复用相同的协作模型。前端展示与交互，后端管理运行状态，执行层通过适配器连接 Codex、Claude Code 或通用 Agent 运行时。
+当前交付面向个人电脑运行，不建设登录、注册、多用户或租户体系。界面、后端和 Agent 执行在本地，配置中心以 doc/ 下的文件为准，不引入本地或云端数据库。本地应用停止时任务不继续执行，后续运行记录的存储方式另行设计。
+
+大模型连接与运行平台配置分别管理。执行层通过适配器连接 Codex、Claude Code 或通用 Agent 运行时，具体框架版本、执行接入、恢复实现以及后续数据库需求仍待讨论。
 
 ## 开发与启动
 
-依赖清单、工具链配置和启动命令将在后续初始化阶段确定。当前不提供安装、运行或测试命令，避免把规划中的命令写成已可用能力。
+需要 Node.js 22.12+、pnpm 10、Python 3.12+ 与 uv。在项目根目录执行：
 
-## 第一版边界
+```powershell
+pnpm --dir frontend install --frozen-lockfile
+pnpm --dir frontend build
+uv sync --project backend --locked --link-mode copy
+uv run --project backend python -m asomforge
+```
 
+打开 http://127.0.0.1:8000。生产构建由同一个本地后端提供，无需额外 Web 服务。服务默认只监听本机，数据根目录为 doc/；可用 `--data-dir`、`--port` 调整。
+
+开发时另开终端执行 `pnpm --dir frontend dev`，访问 Vite 输出的地址。API 默认代理到本机 8000 端口。
+
+```powershell
+uv run --project backend pytest backend/tests -q
+uv run --project backend ruff check backend/src backend/tests
+pnpm --dir frontend typecheck
+pnpm --dir frontend format:check
+pnpm --dir frontend build
+```
+
+导入格式、检查范围与数据备份见[配置中心使用说明](./docs/configuration-center.md)。
+
+## 后续产品范围
+
+- 配置中心和运行界面是两大产品入口；运行界面包含画布与运行详情。
 - 用户在画布上组织 Agent，平台按定义推进工作。
 - 通过正式产物及约定格式自动进行上下游交接。
 - 支持任务中的提问、回答及运行历史追溯。

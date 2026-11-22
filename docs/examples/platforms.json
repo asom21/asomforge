@@ -1,0 +1,7 @@
+{
+  "resources": [
+    { "name": "Codex", "config": { "platform": "codex" } },
+    { "name": "Claude Code", "config": { "platform": "claude" } },
+    { "name": "DeepSeek Harness", "config": { "platform": "deepseek_harness" } }
+  ]
+}

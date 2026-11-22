@@ -1,13 +1,18 @@
 # 文档导航
 
+<!-- 汇总项目说明、技术决策、配置中心与示例的文档入口。 -->
+
 ## 项目与产品
 
 - [项目介绍](../AsomForge-项目介绍.md)
 - [项目说明、系统架构与核心概念](../AsomForge-项目说明与架构设计.md)
+- [配置中心使用说明](./configuration-center.md)
+- [配置导入示例](./examples/)
 
 ## 工程与技术
 
 - [工程结构与模块边界](./architecture/project-structure.md)
+- [本地数据目录与保存约定](../doc/README.md)
 - [技术路线与待确认项](./decisions/technology-direction.md)
 - [接口与产物契约目录](./contracts/README.md)
 - [开发协作规范](../AGENTS.md)

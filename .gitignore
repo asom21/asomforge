@@ -1,3 +1,4 @@
+# 排除依赖、构建产物、运行数据和本机私密文件。
 # Dependencies and environments
 node_modules/
 .pnpm-store/
@@ -26,6 +27,8 @@ htmlcov/
 *.local
 
 # Runtime data (never store artifacts or sessions in source directories)
+/doc/*
+!/doc/README.md
 /data/
 /artifacts/
 /logs/
@@ -36,6 +39,10 @@ htmlcov/
 *.db-wal
 *.sqlite
 *.sqlite3
+/output/
+/.playwright-cli/
+/.playwright/
+*.tsbuildinfo
 
 # Editor and OS files
 .vscode/
