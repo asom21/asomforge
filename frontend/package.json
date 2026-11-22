@@ -1,0 +1,30 @@
+{
+  "name": "asomforge-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.23.0",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "api:generate": "openapi-typescript ../backend/openapi.json -o src/api/schema.d.ts"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "openapi-typescript": "^7.10.0",
+    "prettier": "^3.7.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.0"
+  }
+}

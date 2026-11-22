@@ -1,25 +1,33 @@
-# Frontend
+# 前端
 
-AsomForge 的 TypeScript 前端，承担配置中心、协作画布和运行详情界面。
+<!-- 说明前端职责、工具配置、开发启动和构建方法。 -->
 
-## 目录职责
+React、TypeScript、Vite；使用浏览器原生 dialog 和轻量图标组件。配置以服务端文件为准，前端不在 localStorage 中保存配置或凭据。
 
-| 目录 | 职责 |
-| --- | --- |
-| `src/app/` | 应用初始化、路由、布局与页面组合 |
-| `src/features/configuration/` | Agent、Skill、MCP、Tool 与执行配置管理 |
-| `src/features/workflows/` | 链路画布、节点配置、协作关系和定义版本 |
-| `src/features/runs/` | 本次执行进度、历史、对话与产物查看 |
-| `src/components/` | 与具体业务场景无关的通用组件 |
-| `src/api/` | 后端请求、事件订阅和错误处理 |
-| `src/types/` | 界面类型以及后续生成接口类型的接入位置 |
-| `public/` | 需要直接发布的静态资源 |
-| `tests/` | 前端交互与集成测试预留 |
+在本目录执行：
 
-## 技术方向
+```powershell
+pnpm install --frozen-lockfile
+pnpm dev
+pnpm typecheck
+pnpm format:check
+pnpm build
+```
 
-建议使用 React、Vite 和 React Flow。当前尚未创建依赖清单、组件、路由或工具配置。
+开发服务只绑定本机；`/api` 代理到 127.0.0.1:8000。生产构建输出 dist/，由后端提供。修改接口后先在 backend/ 导出 OpenAPI，再执行 `pnpm api:generate`。
 
-前端管理交互状态，运行事实由后端持久化。后续应以接口契约为依据接入数据，避免手工维护两套不一致的业务契约。
+以下配置保持标准 JSON 格式，用途在此记录：
 
-参见 [项目入口](../README.md) 和 [技术路线](../docs/decisions/technology-direction.md)。
+| 文件             | 用途                                             |
+| ---------------- | ------------------------------------------------ |
+| package.json     | 声明前端依赖、包管理工具和开发构建命令。         |
+| tsconfig.json    | 配置 TypeScript 的类型检查、模块解析和编译约束。 |
+| .prettierrc.json | 统一前端代码的引号、换行和排版规则。             |
+
+- app/：应用组合、分类导航与页面状态。
+- features/configuration/：资源列表、编辑、导入、检查和各类型字段。
+- components/：实际复用的弹层。
+- api/：统一请求入口与 OpenAPI 生成类型。
+- styles/：基础、页面和编辑弹层样式。
+
+五类资源共用操作流程，类型字段直接用组件表达，不维护动态表单引擎。保存失败保留输入；离开未保存的编辑区会提醒；检查始终针对已保存版本。Tool 仅展示暂未开放。画布和运行详情仍未实现。

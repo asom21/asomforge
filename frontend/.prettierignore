@@ -1,0 +1,5 @@
+# 指定无需格式化的依赖、构建产物和生成文件。
+node_modules
+dist
+pnpm-lock.yaml
+src/api/schema.d.ts
