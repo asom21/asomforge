@@ -1,0 +1,44 @@
+# Dependencies and environments
+node_modules/
+.pnpm-store/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Build and tool caches
+dist/
+build/
+.vite/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage/
+htmlcov/
+.coverage
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.local
+
+# Runtime data (never store artifacts or sessions in source directories)
+/data/
+/artifacts/
+/logs/
+/sessions/
+/workspaces/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
