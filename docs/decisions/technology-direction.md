@@ -11,7 +11,7 @@
 | 界面 | React、TypeScript、Vite | 直接编写类型表单；没有动态表单引擎和大型 UI 框架 |
 | 后端 | Python 3.12+、FastAPI、Pydantic | 边界结构校验与 HTTP/SSE 接口 |
 | 存储 | JSON、Skill 目录、私密文件 | 普通资源按 ID 保存；Skill 保留标准包名和相对资料路径 |
-| 连接 | MCP 官方 Python SDK、HTTPX | stdio、Streamable HTTP、SSE；模型只读发现 |
+| 连接 | MCP 官方 Python SDK、HTTPX | stdio、Streamable HTTP、SSE；模型目录发现与明确触发的文本生成测试 |
 | 平台 | Codex、Claude Code、DeepSeek Harness 检查适配器 | 仅安装、版本及平台支持的认证状态查询 |
 | 工具链 | pnpm、uv、Prettier、Ruff、pytest | 两端依赖由锁文件固定 |
 | 接口类型 | OpenAPI、openapi-typescript | 从后端结构生成前端资源与请求类型 |
@@ -27,6 +27,8 @@
 检查与执行分别验收。模型列表能读取，不代表生成可用；MCP 能握手，不代表业务工具可用；CLI 已认证，不代表 Agent 已成功运行。DeepSeek Harness 当前只能明确确认程序和版本，不能假定其认证查询接口。
 
 实现参考 MCP、Agent Skills 规范及各平台公开接口。CC Switch 用于参考分类、导入和适配器职责，不移植其数据库、代理和客户端全局配置同步。具体依据见[配置中心设计](../superpowers/specs/2026-11-22-configuration-center-design.md)。
+
+模型连接采用一份地址/协议/凭据管理多个模型，每模型声明容量、输入类型和推理档位。管理方式参考 DeepSeek Harness 的模型目录编辑和能力声明，但不引入其整个运行时或内置提供商目录。HTTPX 分别适配 OpenAI Chat Completions、Responses、Anthropic Messages；本地草稿测试临时显示，已保存测试按模型与 revision 登记。能力声明不是已验证能力，Anthropic 思考参数暂不接入通用档位映射。详见[多模型连接设计](../superpowers/specs/2026-11-25-model-connections-design.md)。
 
 ## 后续再定
 

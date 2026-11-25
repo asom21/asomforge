@@ -1,22 +1,29 @@
 /* 定义编辑、导入和检查弹层的表单与布局样式。 */
 dialog {
   border: 1px solid var(--line);
-  border-radius: 13px;
+  border-radius: 16px;
   padding: 0;
-  color: #253345;
-  background: white;
-  box-shadow: 0 20px 90px #142b4938;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--dialog-shadow);
   max-height: calc(100dvh - 64px);
   width: 620px;
   max-width: calc(100vw - 32px);
+  overflow: hidden;
+}
+dialog[open] {
+  display: flex;
+  flex-direction: column;
 }
 dialog::backdrop {
-  background: #1d2e4252;
+  background: var(--backdrop);
   backdrop-filter: blur(2px);
 }
 .modal-inner {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   max-height: inherit;
 }
 .dialog-header {
@@ -32,7 +39,7 @@ dialog::backdrop {
   margin-top: 7px;
 }
 .dialog-header .muted {
-  font-size: 11px;
+  font-size: 12px;
 }
 .dialog-body {
   padding: 24px 28px;
@@ -46,7 +53,7 @@ dialog::backdrop {
   align-items: center;
   justify-content: space-between;
   padding: 17px 28px;
-  background: #fcfdff;
+  background: var(--surface-subtle);
   flex-shrink: 0;
 }
 .dialog-footer > div {
@@ -54,28 +61,18 @@ dialog::backdrop {
   gap: 10px;
 }
 .dialog-footer .muted {
-  font-size: 11px;
+  font-size: 12px;
 }
-.drawer {
-  width: 580px;
-  height: 100dvh;
-  max-height: 100dvh;
-  max-width: 100vw;
-  margin: 0 0 0 auto;
-  border: 0;
-  border-left: 1px solid var(--line);
-  border-radius: 0;
+.editor-dialog {
+  width: 720px;
 }
-.drawer .modal-inner {
-  height: 100%;
-}
-.drawer form {
+.editor-dialog form {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
-.drawer .dialog-body {
+.editor-dialog .dialog-body {
   flex: 1;
 }
 .field {
@@ -83,8 +80,8 @@ dialog::backdrop {
   flex-direction: column;
   gap: 8px;
   margin-bottom: 21px;
-  color: #526177;
-  font-size: 12px;
+  color: var(--secondary);
+  font-size: 13px;
 }
 .field > span {
   font-weight: 550;
@@ -93,16 +90,16 @@ dialog::backdrop {
 .field textarea,
 .field select {
   width: 100%;
-  font-size: 13px;
+  font-size: 14px;
 }
 .field .code-input {
-  font-size: 12px;
-  background: #fcfdff;
+  font-size: 13px;
+  background: var(--surface-subtle);
   tab-size: 2;
 }
 .field small {
-  color: #64748b;
-  font-size: 11px;
+  color: var(--muted);
+  font-size: 12px;
   line-height: 1.6;
   font-weight: 400;
 }
@@ -110,22 +107,22 @@ dialog::backdrop {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--line-soft);
   padding-top: 19px;
   margin: 24px 0 20px;
 }
 .section-label h3 {
-  font-size: 13px;
+  font-size: 14px;
 }
 .section-label .text-button {
-  font-size: 11px;
+  font-size: 12px;
 }
 .secret-options {
   border: 1px solid var(--line);
   border-radius: 7px;
   padding: 13px;
-  font-size: 11px;
-  color: #64748b;
+  font-size: 12px;
+  color: var(--muted);
   margin-top: 20px;
 }
 .secret-options summary {
@@ -152,27 +149,27 @@ dialog::backdrop {
 }
 .file-list h3 {
   margin-bottom: 14px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .file-list > div {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--muted);
   padding: 8px 0;
 }
 .file-list small {
   margin-left: auto;
-  font-size: 10px;
+  font-size: 12px;
 }
-.drawer .error-box {
+.editor-dialog .error-box {
   margin-top: 20px;
 }
 .segmented {
   display: flex;
   gap: 5px;
   padding: 4px;
-  background: #f1f4f8;
+  background: var(--surface-subtle);
   border-radius: 7px;
   margin-bottom: 24px;
 }
@@ -180,13 +177,13 @@ dialog::backdrop {
   flex: 1;
   border: 0;
   background: transparent;
-  font-size: 12px;
-  color: #64748b;
+  font-size: 13px;
+  color: var(--muted);
   min-height: 33px;
 }
 .segmented .selected {
-  background: white;
-  color: #3569d4;
+  background: var(--surface);
+  color: var(--blue);
   box-shadow: 0 1px 4px #20365012;
 }
 .upload-zone {
@@ -194,32 +191,32 @@ dialog::backdrop {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px dashed #cbd8eb;
-  background: #fafcff;
+  border: 1px dashed var(--accent-line);
+  background: var(--surface-subtle);
   border-radius: 8px;
   padding: 35px 24px;
   text-align: center;
 }
 .upload-icon {
-  color: #7595c9;
+  color: var(--blue);
   margin-bottom: 16px;
 }
 .upload-zone h3 {
   font-size: 14px;
 }
 .upload-zone p {
-  color: #64748b;
-  font-size: 11px;
+  color: var(--muted);
+  font-size: 12px;
   line-height: 1.8;
   max-width: 370px;
   margin: 12px 0 22px;
 }
 .upload-zone button {
-  font-size: 12px;
+  font-size: 13px;
 }
 .helper-note {
-  color: #64748b;
-  font-size: 11px;
+  color: var(--muted);
+  font-size: 12px;
   line-height: 1.7;
   margin: 17px 0 5px;
 }
@@ -234,11 +231,11 @@ dialog::backdrop {
   justify-content: space-between;
   gap: 12px;
   padding: 8px 3px;
-  font-size: 11px;
-  color: #64748b;
+  font-size: 12px;
+  color: var(--muted);
 }
 .selected-files small {
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 .import-preview {
@@ -246,7 +243,7 @@ dialog::backdrop {
 }
 .import-preview article {
   padding: 15px 0;
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--line-soft);
 }
 .import-preview article:first-child {
   padding-top: 0;
@@ -258,32 +255,32 @@ dialog::backdrop {
   gap: 15px;
 }
 .import-preview strong {
-  font-size: 13px;
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 .import-preview p {
-  font-size: 11px;
+  font-size: 12px;
   margin-top: 9px;
   line-height: 1.7;
   overflow-wrap: anywhere;
 }
 .import-preview small {
-  font-size: 10px;
-  color: #64748b;
+  font-size: 12px;
+  color: var(--muted);
   display: block;
   margin-top: 8px;
 }
 .tag {
-  font-size: 10px;
-  background: #edf3fd;
-  color: #6182ba;
+  font-size: 12px;
+  background: var(--accent-soft);
+  color: var(--blue);
   padding: 3px 6px;
   border-radius: 4px;
   white-space: nowrap;
 }
 .tag.danger {
-  color: #b94458;
-  background: #fff1f3;
+  color: var(--danger);
+  background: var(--danger-soft);
 }
 .check-dialog {
   width: 540px;
@@ -293,8 +290,8 @@ dialog::backdrop {
   padding-bottom: 30px;
 }
 .check-emblem {
-  background: #f0f4fa;
-  color: #718dbb;
+  background: var(--accent-soft);
+  color: var(--blue);
   width: 65px;
   height: 65px;
   border-radius: 50%;
@@ -303,16 +300,16 @@ dialog::backdrop {
   margin: 0 auto 22px;
 }
 .check-emblem.passed {
-  color: #32856b;
-  background: #eaf7f1;
+  color: var(--success);
+  background: var(--success-soft);
 }
 .check-emblem.failed {
-  color: #bb5366;
-  background: #fff1f3;
+  color: var(--danger);
+  background: var(--danger-soft);
 }
 .check-emblem.limited {
-  color: #ab843f;
-  background: #fcf6e9;
+  color: var(--warning);
+  background: var(--warning-soft);
 }
 .check-message {
   text-align: center;
@@ -323,30 +320,32 @@ dialog::backdrop {
   text-align: center;
   line-height: 1.8;
   margin: 10px 0 23px;
-  color: #64748b;
-  font-size: 11px;
+  color: var(--muted);
+  font-size: 12px;
 }
 .check-meta {
   display: grid;
   grid-template-columns: 75px 1fr;
   gap: 13px;
-  font-size: 11px;
-  background: #f8fafd;
-  border: 1px solid #edf1f6;
+  font-size: 12px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--surface-subtle);
   padding: 16px;
   border-radius: 7px;
-  color: #64748b;
+  color: var(--muted);
 }
 .check-meta dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
   margin: 0;
-  color: #5e718b;
+  color: var(--secondary);
 }
 .check-meta code {
-  font-size: 10px;
+  font-size: 12px;
 }
 .result-details {
-  font-size: 11px;
-  color: #64748b;
+  font-size: 12px;
+  color: var(--muted);
   margin-top: 15px;
 }
 .result-details summary {
@@ -354,10 +353,10 @@ dialog::backdrop {
 }
 .result-details pre {
   padding: 12px;
-  background: #f7f9fc;
+  background: var(--surface-subtle);
   overflow-x: auto;
   border-radius: 5px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
 }
 @media (max-width: 600px) {
@@ -378,17 +377,56 @@ dialog::backdrop {
   .check-dialog .dialog-body {
     padding-top: 25px;
   }
-  .drawer {
+  .editor-dialog {
     width: 100%;
   }
-  .drawer .dialog-footer > .muted {
+  .editor-dialog .dialog-footer > .muted {
     width: auto;
     margin-right: auto;
   }
-  .drawer .dialog-footer {
+  .editor-dialog .dialog-footer {
     gap: 10px;
   }
   .dialog-footer button {
-    font-size: 12px;
+    font-size: 13px;
   }
+}
+
+/* 弹层和运行中反馈统一使用短动画，减少动态时由全局规则关闭。 */
+dialog[open] {
+  animation: surface-in 180ms ease-out;
+}
+.dialog-header h2 {
+  overflow-wrap: anywhere;
+}
+.dialog-header > div {
+  min-width: 0;
+}
+.dialog-header .icon-button {
+  flex-shrink: 0;
+}
+.check-emblem.running {
+  color: var(--blue);
+  background: var(--accent-soft);
+  animation: breathe 1.6s ease-in-out infinite;
+}
+.field {
+  font-size: 14px;
+}
+.field input,
+.field textarea,
+.field select {
+  font-size: 14px;
+}
+.field .code-input {
+  font-size: 13px;
+}
+.secret-options,
+.check-meta,
+.result-details {
+  font-size: 13px;
+}
+.segmented .selected {
+  background: var(--surface-raised);
+  color: var(--blue);
 }

@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-当前已实现配置中心前后端：五类配置可新增、编辑、删除、导入和独立检查，数据保存在本机文件中。Tool 仅保留入口。画布、Agent 执行、调度与恢复引擎尚未实现。
+当前已实现配置中心前后端：五类配置可新增、编辑、删除、导入和独立检查，数据保存在本机文件中。大模型连接支持一份 API 连接管理多个模型、发现候选目录，以及按 OpenAI Chat Completions、Responses、Anthropic Messages 协议发起明确触发的文本连通性测试。Tool 仅保留入口。画布、Agent 执行、调度与恢复引擎尚未实现。
 
 第一阶段已确定为配置中心闭环：使用本地文件保存和管理 Skill、MCP、Prompt、大模型和运行平台配置，支持导入及适用的校验与连通性测试。Tool 保留导航和目录位置，暂不实现。后续功能分阶段设计、验证和验收。
 
@@ -78,22 +78,41 @@ AsomForge/
 
 ## 开发与启动
 
-需要 Node.js 22.12+、pnpm 10、Python 3.12+ 与 uv。在项目根目录执行：
+需要 Node.js 22.12+、pnpm 10、Python 3.12+ 与 uv。默认开发方式为前后端分开运行：前端使用 3000 端口，后端使用 8000 端口。
+
+首次在项目根目录安装依赖：
 
 ```powershell
 pnpm --dir frontend install --frozen-lockfile
-pnpm --dir frontend build
 uv sync --project backend --locked --link-mode copy
+```
+
+在项目根目录打开两个终端，分别启动服务。
+
+终端一，启动后端：
+
+```powershell
 uv run --project backend python -m asomforge
 ```
 
-打开 http://127.0.0.1:8000。生产构建由同一个本地后端提供，无需额外 Web 服务。服务默认只监听本机，数据根目录为 doc/；可用 `--data-dir`、`--port` 调整。
+终端二，启动前端：
 
-开发时另开终端执行 `pnpm --dir frontend dev`，访问 Vite 输出的地址。API 默认代理到本机 8000 端口。
+```powershell
+pnpm --dir frontend dev
+```
+
+浏览器打开 http://127.0.0.1:3000。前端支持热更新，`/api` 请求由 Vite 代理到 http://127.0.0.1:8000；后端接口文档位于 http://127.0.0.1:8000/docs。前端端口被占用时会报错，不自动切换到其他端口。
+
+两个服务默认只监听本机。后端数据根目录为 doc/，可用 `--data-dir`、`--port` 调整；修改后端端口时，也需同步调整 frontend/vite.config.ts 中的 API 代理目标。
+
+生产构建可执行 `pnpm --dir frontend build`，构建产物由后端一并提供，此时可直接访问后端地址；该方式不提供前端开发热更新。
+
+常用验证命令：
 
 ```powershell
 uv run --project backend pytest backend/tests -q
 uv run --project backend ruff check backend/src backend/tests
+pnpm --dir frontend test
 pnpm --dir frontend typecheck
 pnpm --dir frontend format:check
 pnpm --dir frontend build

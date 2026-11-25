@@ -1,9 +1,25 @@
 {
-  "name": "DeepSeek",
+  "name": "DeepSeek 模型连接",
+  "description": "一个 API 连接下管理多个模型；使用前填写自己的凭据并核对接口支持范围。",
   "config": {
-    "protocol": "openai",
+    "protocol": "openai-chat-completions",
     "base_url": "https://api.deepseek.com/v1",
-    "model": "deepseek-chat",
-    "api_key": ""
+    "api_key": "",
+    "output_token_field": "max_tokens",
+    "default_model_id": "deepseek-chat",
+    "models": [
+      {
+        "id": "deepseek-chat",
+        "name": "通用对话",
+        "input_modalities": ["text"],
+        "reasoning_efforts": false
+      },
+      {
+        "id": "deepseek-reasoner",
+        "name": "推理模型",
+        "input_modalities": ["text"],
+        "reasoning_efforts": false
+      }
+    ]
   }
 }

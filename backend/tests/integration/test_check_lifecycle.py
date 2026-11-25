@@ -3,6 +3,7 @@ import asyncio
 import socket
 import sys
 import time
+from contextlib import suppress
 from threading import Thread
 
 import httpx
@@ -36,11 +37,60 @@ def hanging_resource(app, tmp_path):
 
 @pytest.mark.asyncio
 async def test_mcp_timeout_closes_sdk_process(tmp_path):
+    from asomforge.runtimes.mcp import check_mcp
+
     app = create_app(tmp_path)
     resource = hanging_resource(app, tmp_path)
-    checked = await CheckService(app.state.service, tmp_path, 0.5, 1).run(resource)
+    config = app.state.service.resolved(resource)
+    loop = asyncio.get_running_loop()
+    timeout_ready = loop.create_future()
+
+    async def check_with_deadline():
+        async with asyncio.timeout(None) as deadline:
+            timeout_ready.set_result(deadline)
+            return await check_mcp(config, str(tmp_path), 30)
+
+    task = asyncio.create_task(check_with_deadline())
+    try:
+        deadline = await timeout_ready
+        # Startup is a precondition: only measure timeout cleanup once the PID is known.
+        async with asyncio.timeout(10):
+            while not (tmp_path / "pid").exists():
+                if task.done():
+                    await task
+                    pytest.fail("MCP check ended before the child reported its PID")
+                await asyncio.sleep(0.02)
+        pid = int((tmp_path / "pid").read_text())
+        deadline.reschedule(loop.time() + 0.1)
+        with pytest.raises(TimeoutError):
+            await task
+        # Windows may report a terminating process briefly after the SDK closes its handle.
+        async with asyncio.timeout(7):
+            while psutil.pid_exists(pid):
+                await asyncio.sleep(0.02)
+        assert not psutil.pid_exists(pid)
+    finally:
+        if not task.done():
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
+
+
+@pytest.mark.asyncio
+async def test_mcp_service_reports_timeout(tmp_path, monkeypatch):
+    started = asyncio.Event()
+
+    async def hanging_check(*args):
+        started.set()
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr("asomforge.runtimes.checks.check_mcp", hanging_check)
+    app = create_app(tmp_path)
+    resource = hanging_resource(app, tmp_path)
+    checked = await CheckService(app.state.service, tmp_path, 0.1, 1).run(resource)
+    assert started.is_set()
     assert checked["code"] == "timeout", checked
-    assert not psutil.pid_exists(int((tmp_path / "pid").read_text()))
+    assert app.state.service.repository.get("mcp", resource.id).last_check.code == "timeout"
 
 
 @pytest.mark.asyncio

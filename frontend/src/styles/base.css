@@ -1,14 +1,73 @@
-/* 定义全局字体、颜色、控件和通用反馈样式。 */
+/* 定义深浅主题语义颜色、全局排版、控件和轻量交互反馈。 */
 :root {
   font-family: 'Segoe UI Variable', 'Segoe UI', 'Microsoft YaHei', sans-serif;
-  color: #253345;
-  background: #f6f8fa;
+  color: var(--text);
+  background: var(--canvas);
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --blue: #3569d4;
-  --line: #e2e7ef;
-  --muted: #748195;
+  --canvas: #f5f6f8;
+  --surface: #ffffff;
+  --surface-subtle: #f9fafb;
+  --surface-raised: #ffffff;
+  --sidebar: #fcfcfd;
+  --text: #202735;
+  --secondary: #465267;
+  --muted: #687487;
+  --blue: #315fce;
+  --accent-soft: #edf2ff;
+  --accent-line: #d8e2fc;
+  --accent-glow: #4f7af014;
+  --primary-start: #4779ed;
+  --primary-end: #365dce;
+  --line: #e2e6ed;
+  --line-soft: #edf0f4;
+  --hover: #f1f4f8;
+  --input: #ffffff;
+  --success: #23775a;
+  --success-soft: #eaf6ef;
+  --danger: #b83c52;
+  --danger-soft: #fff0f2;
+  --danger-line: #f1d0d7;
+  --warning: #8d631c;
+  --warning-soft: #fbf3e3;
+  --shadow: 0 4px 20px #172b4d05;
+  --dialog-shadow: 0 24px 90px #101c3333;
+  --backdrop: #18233770;
+  --focus: #5b82ee33;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --canvas: #111419;
+  --surface: #1a1f27;
+  --surface-subtle: #171c23;
+  --surface-raised: #222a35;
+  --sidebar: #15191f;
+  --text: #e7ecf4;
+  --secondary: #c0c9d7;
+  --muted: #9aa7ba;
+  --blue: #8dafff;
+  --accent-soft: #232f49;
+  --accent-line: #354b76;
+  --accent-glow: #5685ff14;
+  --primary-start: #4978e7;
+  --primary-end: #385dcc;
+  --line: #303844;
+  --line-soft: #262e39;
+  --hover: #252d39;
+  --input: #151a22;
+  --success: #78d3a9;
+  --success-soft: #1c352c;
+  --danger: #f49aaa;
+  --danger-soft: #3a232c;
+  --danger-line: #623442;
+  --warning: #e7bf76;
+  --warning-soft: #362e20;
+  --shadow: 0 4px 24px #00000012;
+  --dialog-shadow: 0 24px 90px #00000066;
+  --backdrop: #06090fc2;
+  --focus: #7fa6ff40;
 }
 * {
   box-sizing: border-box;
@@ -16,6 +75,20 @@
 body {
   margin: 0;
   font-size: 14px;
+  line-height: 1.5;
+}
+body,
+.sidebar,
+.topbar,
+.resource-panel,
+dialog,
+input,
+textarea,
+select {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
 }
 button,
 input,
@@ -32,75 +105,84 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 37px;
-  padding: 8px 14px;
+  min-height: 39px;
+  padding: 9px 15px;
   border: 1px solid var(--line);
-  border-radius: 7px;
-  background: white;
-  color: #3b4b62;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--secondary);
   font-weight: 500;
   transition:
-    background 120ms,
-    border-color 120ms;
+    background-color 160ms,
+    border-color 160ms,
+    box-shadow 160ms,
+    transform 160ms,
+    color 160ms;
   white-space: nowrap;
 }
 button:hover {
-  background: #f3f6fa;
-  border-color: #bcc9da;
+  background: var(--hover);
+  border-color: var(--muted);
+}
+button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 button:disabled {
   cursor: default;
   opacity: 0.55;
 }
 button.primary {
-  border-color: var(--blue);
-  background: var(--blue);
-  color: white;
-  box-shadow: 0 2px 3px #244ba51a;
+  border-color: var(--primary-end);
+  background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+  color: #ffffff;
+  box-shadow:
+    0 3px 8px #315fce20,
+    inset 0 1px 0 #ffffff18;
 }
 button.primary:hover {
-  background: #2c5cc1;
+  border-color: var(--primary-start);
+  box-shadow: 0 4px 12px #315fce38;
 }
 .icon-button {
-  padding: 7px;
-  min-height: 31px;
+  padding: 8px;
+  min-height: 34px;
   border-color: transparent;
   background: transparent;
-  border-radius: 5px;
-  color: #64748b;
+  color: var(--muted);
 }
 .text-button {
   border-color: transparent;
   color: var(--blue);
   background: transparent;
-  padding: 5px 7px;
-  min-height: 31px;
+  padding: 6px 8px;
+  min-height: 34px;
 }
 .delete-button:hover {
-  color: #be3749;
-  background: #fff0f1;
+  color: var(--danger);
+  background: var(--danger-soft);
   border-color: transparent;
 }
 input:not([type='checkbox']),
 textarea,
 select {
-  color: #253345;
-  border: 1px solid #dce3ed;
-  border-radius: 6px;
-  background: white;
-  padding: 10px 11px;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--input);
+  padding: 11px 12px;
   min-width: 0;
 }
 input::placeholder,
 textarea::placeholder {
-  color: #64748b;
+  color: var(--muted);
+  opacity: 1;
 }
 textarea {
   resize: vertical;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 input[type='checkbox'] {
-  accent-color: var(--blue);
+  accent-color: var(--primary-start);
 }
 :focus-visible {
   outline: 2px solid var(--blue);
@@ -110,7 +192,7 @@ input:focus,
 textarea:focus,
 select:focus {
   border-color: var(--blue);
-  outline: 2px solid #3569d41a;
+  outline: 3px solid var(--focus);
   outline-offset: 0;
 }
 h1,
@@ -120,16 +202,18 @@ p {
   margin: 0;
 }
 h1 {
-  font-size: 26px;
-  letter-spacing: -0.5px;
+  font-size: 28px;
+  letter-spacing: -0.7px;
   font-weight: 650;
+  line-height: 1.3;
 }
 h2 {
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 600;
+  letter-spacing: -0.3px;
 }
 h3 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
 }
 small {
@@ -139,7 +223,7 @@ code,
 pre,
 .code-input {
   font-family: 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
-  font-size: 12px;
+  font-size: 13px;
 }
 code {
   overflow-wrap: anywhere;
@@ -150,7 +234,7 @@ a {
 }
 .muted {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 .button-row {
   display: flex;
@@ -158,20 +242,20 @@ a {
   gap: 10px;
 }
 .error-box {
-  padding: 12px 14px;
-  background: #fff4f5;
-  color: #a82840;
-  border: 1px solid #f1d6dc;
-  border-radius: 7px;
+  padding: 13px 15px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid var(--danger-line);
+  border-radius: 9px;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.7;
   overflow-wrap: anywhere;
 }
 .error-text {
-  color: #b63c4e;
+  color: var(--danger);
 }
 .warning-text {
-  color: #976b25;
+  color: var(--warning);
 }
 .spin {
   animation: spin 1.2s linear infinite;
@@ -179,6 +263,21 @@ a {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+@keyframes surface-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes breathe {
+  50% {
+    box-shadow: 0 0 0 7px var(--accent-glow);
   }
 }
 .toast {
@@ -190,12 +289,35 @@ a {
   display: flex;
   gap: 10px;
   align-items: center;
-  background: #253345;
-  color: white;
-  border: 1px solid #43516a;
+  max-width: calc(100vw - 32px);
+  background: var(--surface-raised);
+  color: var(--text);
+  border: 1px solid var(--line);
   padding: 13px 22px;
-  border-radius: 8px;
-  box-shadow: 0 6px 24px #1d2e4426;
+  border-radius: 10px;
+  box-shadow: var(--dialog-shadow);
+}
+.toast svg {
+  color: var(--success);
+  flex-shrink: 0;
+}
+/* 主题快照以圆形揭示，避免控件颜色过渡与默认淡入叠加。 */
+:root.theme-reveal *,
+:root.theme-reveal *::before,
+:root.theme-reveal *::after {
+  transition: none !important;
+}
+:root.theme-reveal::view-transition-group(root),
+:root.theme-reveal::view-transition-old(root),
+:root.theme-reveal::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+:root.theme-reveal::view-transition-old(root) {
+  z-index: 1;
+}
+:root.theme-reveal::view-transition-new(root) {
+  z-index: 2;
 }
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -203,5 +325,6 @@ a {
   *::after {
     animation: none !important;
     transition: none !important;
+    scroll-behavior: auto !important;
   }
 }

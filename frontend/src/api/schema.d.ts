@@ -110,6 +110,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/model-connections/discover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Discover */
+        post: operations["discover_api_model_connections_discover_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/model-connections/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Draft Test */
+        post: operations["draft_test_api_model_connections_test_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/configurations/models/{resource_id}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Saved Test */
+        post: operations["saved_test_api_configurations_models__resource_id__test_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/imports/{kind}/{action}": {
         parameters: {
             query?: never;
@@ -240,6 +291,93 @@ export interface components {
             /** Results */
             results: components["schemas"]["ImportOutcome"][];
         };
+        /** ModelConfig */
+        ModelConfig: {
+            /**
+             * Protocol
+             * @default openai-chat-completions
+             * @enum {string}
+             */
+            protocol: "openai-chat-completions" | "openai-responses" | "anthropic-messages";
+            /**
+             * Base Url
+             * Format: uri
+             */
+            base_url: string;
+            /**
+             * Api Key
+             * @default
+             */
+            api_key: string;
+            /**
+             * Output Token Field
+             * @default max_completion_tokens
+             * @enum {string}
+             */
+            output_token_field: "max_completion_tokens" | "max_tokens";
+            /** Models */
+            models?: components["schemas"]["ModelEntry"][];
+            /**
+             * Default Model Id
+             * @default
+             */
+            default_model_id: string;
+        };
+        /** ModelDiscoverRequest */
+        ModelDiscoverRequest: {
+            config: components["schemas"]["ModelConfig"];
+            /** Resource Id */
+            resource_id?: string | null;
+            /** Revision */
+            revision?: number | null;
+            /**
+             * Clear Api Key
+             * @default false
+             */
+            clear_api_key: boolean;
+        };
+        /** ModelDiscovery */
+        ModelDiscovery: {
+            /** Models */
+            models: components["schemas"]["ModelEntry"][];
+        };
+        /** ModelEntry */
+        ModelEntry: {
+            /** Id */
+            id: string;
+            /** Name */
+            name?: string | null;
+            /** Context Window */
+            context_window?: number | null;
+            /** Max Output Tokens */
+            max_output_tokens?: number | null;
+            /** Input Modalities */
+            input_modalities?: ("text" | "image")[];
+            /**
+             * Reasoning Efforts
+             * @default false
+             */
+            reasoning_efforts: false | {
+                [key: string]: string | null;
+            };
+        };
+        /** ModelProbeRequest */
+        ModelProbeRequest: {
+            config: components["schemas"]["ModelConfig"];
+            /** Resource Id */
+            resource_id?: string | null;
+            /** Revision */
+            revision?: number | null;
+            /**
+             * Clear Api Key
+             * @default false
+             */
+            clear_api_key: boolean;
+            /** Model Id */
+            model_id?: string | null;
+            /** Reasoning Effort */
+            reasoning_effort?: ("off" | "minimal" | "low" | "medium" | "high" | "xhigh") | null;
+        };
         /** Resource */
         Resource: {
             /**
@@ -291,8 +429,21 @@ export interface components {
                 [key: string]: string;
             };
             last_check?: components["schemas"]["CheckResult"] | null;
+            /** Model Checks */
+            model_checks?: {
+                [key: string]: components["schemas"]["CheckResult"];
+            };
             /** Secret Fields */
             readonly secret_fields: string[];
+        };
+        /** SavedModelProbeRequest */
+        SavedModelProbeRequest: {
+            /** Revision */
+            revision: number;
+            /** Model Id */
+            model_id: string;
+            /** Reasoning Effort */
+            reasoning_effort?: ("off" | "minimal" | "low" | "medium" | "high" | "xhigh") | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -606,6 +757,107 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discover_api_model_connections_discover_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModelDiscoverRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelDiscovery"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_test_api_model_connections_test_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModelProbeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    saved_test_api_configurations_models__resource_id__test_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavedModelProbeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
                 };
             };
             /** @description Validation Error */

@@ -1,4 +1,4 @@
-# 验证模型发现、认证失败、MCP 握手和平台检测结果。
+# 验证模型文本生成、认证失败、MCP 握手和平台检测结果。
 import asyncio
 import json
 import os
@@ -27,7 +27,7 @@ def models_server():
         def do_GET(self):
             if self.path.startswith("/mcp-auth"):
                 self.send_response(401)
-            elif self.path != "/v1/models":
+            elif self.path != "/v1/chat/completions":
                 self.send_response(404)
             elif self.headers.get("Authorization") != "Bearer controlled-key":
                 self.send_response(401)
@@ -35,7 +35,11 @@ def models_server():
                 self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(b'{"data":[{"id":"controlled-model"}]}')
+            self.wfile.write(
+                json.dumps(
+                    {"choices": [{"message": {"content": "连接成功。"}, "finish_reason": "stop"}]}
+                ).encode()
+            )
 
         do_POST = do_GET
 
@@ -69,7 +73,8 @@ def test_model_check_uses_saved_key_and_distinguishes_auth(tmp_path, models_serv
     assert checked["status"] == "passed"
     assert checked["revision"] == 1
     assert "controlled-key" not in response.text
-    assert "模型列表" in checked["message"]
+    assert checked["details"]["mode"] == "generation"
+    assert checked["details"]["model_id"] == "controlled-model"
     resource["config"]["api_key"] = "wrong-key"
     client.put(
         f"/api/configurations/models/{resource['id']}",

@@ -16,6 +16,7 @@ def test_failed_resource_write_keeps_old_resource_and_credentials(tmp_path, monk
             name="original",
             config={
                 "base_url": "https://example.com/v1",
+                "model": "fixture-model",
                 "api_key": "old-secret",
             },
         ),
@@ -34,6 +35,7 @@ def test_failed_resource_write_keeps_old_resource_and_credentials(tmp_path, monk
                 revision=1,
                 config={
                     "base_url": "https://example.com/v1",
+                    "model": "fixture-model",
                     "api_key": "new-secret",
                 },
             ),
@@ -91,7 +93,7 @@ def test_missing_credentials_become_a_check_result_not_an_unhandled_stream_error
         "/api/configurations/models",
         json={
             "name": "missing secret",
-            "config": {"base_url": "https://example.com", "api_key": "key"},
+            "config": {"base_url": "https://example.com", "api_key": "key", "model": "fixture"},
         },
     ).json()
     app.state.service.repository.write_secrets({})

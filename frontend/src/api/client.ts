@@ -16,7 +16,7 @@ export type CheckResult =
 export type ImportPreview = components['schemas']['ImportPreview'];
 export type ImportResults = components['schemas']['ImportResults'];
 
-async function responseError(response: Response): Promise<Error> {
+export async function responseError(response: Response): Promise<Error> {
   try {
     const body = await response.json();
     const message = Array.isArray(body.detail)
@@ -30,7 +30,7 @@ async function responseError(response: Response): Promise<Error> {
   }
 }
 
-async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
+export async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
   let response: Response;
   try {
     response = await fetch(url, options);

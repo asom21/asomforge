@@ -59,7 +59,11 @@ def test_toggle_preserves_private_credentials_and_noop_does_not_change_revision(
         "/api/configurations/models",
         json={
             "name": "model",
-            "config": {"base_url": "https://example.com/v1", "api_key": "controlled-private-key"},
+            "config": {
+                "base_url": "https://example.com/v1",
+                "model": "fixture-model",
+                "api_key": "controlled-private-key",
+            },
         },
     ).json()
     secrets_path = tmp_path / "private/secrets.json"

@@ -44,7 +44,7 @@ export const categories = [
     title: '大模型',
     subtitle: '为不同任务，准备合适的模型连接。',
     icon: Bot,
-    hint: '支持 OpenAI 兼容协议与 Anthropic。检查只读取模型列表，不发送生成请求。',
+    hint: '支持 OpenAI Chat Completions、Responses 和 Anthropic Messages；测试会发送一次真实文本请求。',
   },
   {
     key: 'platforms',
@@ -70,7 +70,13 @@ export function summary(resource: Resource): string {
     case 'prompts':
       return String(c.content).replace(/\s+/g, ' ').slice(0, 90);
     case 'models':
-      return [c.model, c.base_url].filter(Boolean).join(' / ');
+      return [
+        Array.isArray(c.models) ? `${c.models.length} 个模型` : c.model ? '1 个模型' : '目录待补全',
+        c.protocol,
+        c.base_url,
+      ]
+        .filter(Boolean)
+        .join(' · ');
     case 'platforms':
       return [platformNames[String(c.platform)], c.cwd || '默认工作目录'].join(' / ');
   }

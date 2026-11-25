@@ -85,7 +85,11 @@ export function ResourceEditor({
     }
   };
   return (
-    <Modal className="drawer" label={`${resource ? '编辑' : '新建'} ${title}`} onClose={close}>
+    <Modal
+      className="editor-dialog"
+      label={`${resource ? '编辑' : '新建'} ${title}`}
+      onClose={close}
+    >
       <header className="dialog-header">
         <div>
           <span className="muted">配置中心 / {title}</span>

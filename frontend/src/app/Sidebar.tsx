@@ -24,7 +24,7 @@ export function Sidebar({
         <span className="workspace-avatar">A</span>
         <div>
           <strong>个人工作空间</strong>
-          <small>本地运行</small>
+          <small>我的资源与连接</small>
         </div>
         <HardDrive size={15} />
       </div>
@@ -59,7 +59,7 @@ export function Sidebar({
           <span className={`connection-dot ${catalog ? '' : 'offline'}`} />
           {catalog ? '本地服务已连接' : '等待本地服务'}
         </div>
-        <small>配置留在本机，按需连接外部服务。</small>
+        <small>配置保存在本机</small>
         <span className="version-label">
           AsomForge <span>v0.1.0</span>
         </span>

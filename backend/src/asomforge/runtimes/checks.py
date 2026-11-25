@@ -9,52 +9,10 @@ from urllib.parse import unquote, urlsplit
 import httpx
 
 from asomforge.application.configurations import ConfigurationService
+from asomforge.application.model_connections import ModelConnectionService
 from asomforge.domain.configurations import ConfigurationError, Resource
 from asomforge.runtimes.mcp import check_mcp
 from asomforge.runtimes.platforms import check_platform
-
-
-async def check_model(config: dict, timeout: float) -> dict:
-    url = config["base_url"].rstrip("/") + "/models"
-    headers = {"Authorization": f"Bearer {config['api_key']}"} if config["api_key"] else {}
-    if config["protocol"] == "anthropic":
-        headers = {"anthropic-version": "2023-06-01", "x-api-key": config["api_key"]}
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
-        response = await client.get(url, headers=headers)
-    if response.status_code in (401, 403):
-        return {"status": "failed", "code": "auth", "message": "端点拒绝认证，请检查凭据与权限"}
-    if response.status_code in (404, 405, 501):
-        return {
-            "status": "limited",
-            "code": "discovery_unsupported",
-            "message": "端点不支持模型列表发现，认证和推理能力未验证",
-        }
-    response.raise_for_status()
-    try:
-        data = response.json()["data"]
-        if not isinstance(data, list):
-            raise ValueError
-        ids = [item["id"] for item in data if isinstance(item, dict) and "id" in item]
-    except (ValueError, KeyError, TypeError):
-        return {
-            "status": "failed",
-            "code": "invalid_response",
-            "message": "端点未返回协议要求的模型列表",
-        }
-    selected = config["model"]
-    if selected and selected not in ids:
-        return {
-            "status": "limited",
-            "code": "model_not_listed",
-            "details": {"models": len(ids)},
-            "message": "模型列表读取成功，但未找到指定模型；未验证推理调用",
-        }
-    return {
-        "status": "passed",
-        "code": "discovered",
-        "details": {"models": len(ids)},
-        "message": "模型列表读取成功；未发送生成请求",
-    }
 
 
 def skill_references(content: str, files: dict) -> list[str]:
@@ -86,6 +44,8 @@ class CheckService:
         self.slots = asyncio.Semaphore(concurrency)
 
     async def run(self, resource: Resource) -> dict:
+        if resource.kind == "models":
+            return await ModelConnectionService(self).run_default(resource)
         cwd = Path(resource.config.get("cwd") or self.root).expanduser()
         if not cwd.is_absolute():
             cwd = self.root / cwd
@@ -104,8 +64,6 @@ class CheckService:
                 self.service.validate(resource.kind, config)
                 if resource.kind == "mcp":
                     result = await check_mcp(config, cwd, self.timeout)
-                elif resource.kind == "models":
-                    result = await check_model(config, self.timeout)
                 elif resource.kind == "platforms":
                     result = await check_platform(config, cwd)
                 elif resource.kind == "skills":

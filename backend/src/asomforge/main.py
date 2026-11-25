@@ -12,8 +12,10 @@ from asomforge.api.checks import check_router
 from asomforge.api.configurations import resource_router
 from asomforge.api.contracts import Catalog
 from asomforge.api.imports import import_router
+from asomforge.api.model_connections import model_connection_router
 from asomforge.application.configurations import ConfigurationService
 from asomforge.application.imports import ImportService
+from asomforge.application.model_connections import ModelConnectionService
 from asomforge.domain.configurations import KINDS, ConfigurationError
 from asomforge.infrastructure.files import FileRepository
 from asomforge.runtimes.checks import CheckService
@@ -74,6 +76,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     app.include_router(resource_router(service))
     app.include_router(check_router(checks))
+    app.include_router(model_connection_router(ModelConnectionService(checks)))
     app.include_router(import_router(imports))
     frontend = project_root / "frontend" / "dist"
     if frontend.is_dir():

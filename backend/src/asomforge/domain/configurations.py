@@ -15,6 +15,8 @@ from pydantic import (
     model_validator,
 )
 
+from asomforge.domain.model_connections import ModelConfig
+
 Kind = Literal["skills", "mcp", "prompts", "models", "platforms"]
 KINDS: tuple[Kind, ...] = ("skills", "mcp", "prompts", "models", "platforms")
 VARIABLE = re.compile(r"{{\s*([A-Za-z_]\w*)\s*}}")
@@ -112,13 +114,6 @@ class PromptConfig(ConfigModel):
         return self
 
 
-class ModelConfig(ConfigModel):
-    protocol: Literal["openai", "anthropic"] = "openai"
-    base_url: HttpUrl
-    model: str = ""
-    api_key: str = ""
-
-
 class PlatformConfig(ConfigModel):
     platform: Literal["codex", "claude", "deepseek_harness"]
     command: str = ""
@@ -174,6 +169,7 @@ class Resource(ConfigModel):
     config: dict
     secret_refs: dict[str, str] = Field(default_factory=dict)
     last_check: CheckResult | None = None
+    model_checks: dict[str, CheckResult] = Field(default_factory=dict)
 
     @computed_field
     @property

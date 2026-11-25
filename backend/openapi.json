@@ -432,6 +432,140 @@
         }
       }
     },
+    "/api/model-connections/discover": {
+      "post": {
+        "tags": [
+          "model-connections"
+        ],
+        "summary": "Discover",
+        "operationId": "discover_api_model_connections_discover_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelDiscoverRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelDiscovery"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/model-connections/test": {
+      "post": {
+        "tags": [
+          "model-connections"
+        ],
+        "summary": "Draft Test",
+        "operationId": "draft_test_api_model_connections_test_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelProbeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/configurations/models/{resource_id}/test": {
+      "post": {
+        "tags": [
+          "model-connections"
+        ],
+        "summary": "Saved Test",
+        "operationId": "saved_test_api_configurations_models__resource_id__test_post",
+        "parameters": [
+          {
+            "name": "resource_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Resource Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavedModelProbeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/imports/{kind}/{action}": {
       "post": {
         "summary": "Import Resources",
@@ -812,6 +946,281 @@
         ],
         "title": "ImportResults"
       },
+      "ModelConfig": {
+        "properties": {
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "openai-chat-completions",
+              "openai-responses",
+              "anthropic-messages"
+            ],
+            "title": "Protocol",
+            "default": "openai-chat-completions"
+          },
+          "base_url": {
+            "type": "string",
+            "maxLength": 2083,
+            "minLength": 1,
+            "format": "uri",
+            "title": "Base Url"
+          },
+          "api_key": {
+            "type": "string",
+            "title": "Api Key",
+            "default": ""
+          },
+          "output_token_field": {
+            "type": "string",
+            "enum": [
+              "max_completion_tokens",
+              "max_tokens"
+            ],
+            "title": "Output Token Field",
+            "default": "max_completion_tokens"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelEntry"
+            },
+            "type": "array",
+            "title": "Models"
+          },
+          "default_model_id": {
+            "type": "string",
+            "title": "Default Model Id",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "base_url"
+        ],
+        "title": "ModelConfig"
+      },
+      "ModelDiscoverRequest": {
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/ModelConfig"
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          },
+          "clear_api_key": {
+            "type": "boolean",
+            "title": "Clear Api Key",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "config"
+        ],
+        "title": "ModelDiscoverRequest"
+      },
+      "ModelDiscovery": {
+        "properties": {
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelEntry"
+            },
+            "type": "array",
+            "title": "Models"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "models"
+        ],
+        "title": "ModelDiscovery"
+      },
+      "ModelEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "context_window": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Window"
+          },
+          "max_output_tokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Output Tokens"
+          },
+          "input_modalities": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "text",
+                "image"
+              ]
+            },
+            "type": "array",
+            "title": "Input Modalities"
+          },
+          "reasoning_efforts": {
+            "anyOf": [
+              {
+                "type": "boolean",
+                "const": false
+              },
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "propertyNames": {
+                  "enum": [
+                    "off",
+                    "minimal",
+                    "low",
+                    "medium",
+                    "high",
+                    "xhigh"
+                  ]
+                },
+                "type": "object"
+              }
+            ],
+            "title": "Reasoning Efforts",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "ModelEntry"
+      },
+      "ModelProbeRequest": {
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/ModelConfig"
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          },
+          "clear_api_key": {
+            "type": "boolean",
+            "title": "Clear Api Key",
+            "default": false
+          },
+          "model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Id"
+          },
+          "reasoning_effort": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "off",
+                  "minimal",
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning Effort"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "config"
+        ],
+        "title": "ModelProbeRequest"
+      },
       "Resource": {
         "properties": {
           "schema_version": {
@@ -886,6 +1295,13 @@
               }
             ]
           },
+          "model_checks": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CheckResult"
+            },
+            "type": "object",
+            "title": "Model Checks"
+          },
           "secret_fields": {
             "items": {
               "type": "string"
@@ -905,6 +1321,45 @@
           "secret_fields"
         ],
         "title": "Resource"
+      },
+      "SavedModelProbeRequest": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Revision"
+          },
+          "model_id": {
+            "type": "string",
+            "title": "Model Id"
+          },
+          "reasoning_effort": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "off",
+                  "minimal",
+                  "low",
+                  "medium",
+                  "high",
+                  "xhigh"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning Effort"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision",
+          "model_id"
+        ],
+        "title": "SavedModelProbeRequest"
       },
       "ValidationError": {
         "properties": {

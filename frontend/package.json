@@ -8,6 +8,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "api:generate": "openapi-typescript ../backend/openapi.json -o src/api/schema.d.ts"

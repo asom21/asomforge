@@ -8,6 +8,7 @@ from threading import RLock
 from uuid import UUID, uuid4
 
 from asomforge.domain.configurations import KINDS, ConfigurationError, Kind, Resource
+from asomforge.domain.model_connections import ModelConfig
 
 
 def atomic_json(path: Path, value: dict, *, private: bool = False) -> None:
@@ -67,6 +68,8 @@ class FileRepository:
             if data["kind"] == "skills":
                 content = path.parent / data["config"]["skill_name"] / "SKILL.md"
                 data["config"]["content"] = content.read_text("utf-8")
+            if data["kind"] == "models":
+                data["config"] = ModelConfig.model_validate(data["config"]).model_dump(mode="json")
             return Resource.model_validate(data)
         except FileNotFoundError as error:
             raise ConfigurationError("配置或配套文件不存在", 404) from error

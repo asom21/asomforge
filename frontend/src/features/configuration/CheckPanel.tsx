@@ -63,7 +63,7 @@ export function CheckPanel({
         </button>
       </header>
       <div className="dialog-body">
-        <div className={`check-emblem ${result?.status || ''}`}>
+        <div className={`check-emblem ${running ? 'running' : result?.status || ''}`}>
           {running ? (
             <LoaderCircle className="spin" size={28} />
           ) : result?.status === 'passed' ? (

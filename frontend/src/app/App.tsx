@@ -1,6 +1,6 @@
 // 组合配置中心页面，管理分类、列表状态和资源操作。
 import { useEffect, useState } from 'react';
-import { ChevronRight, Folder, HardDrive, Info, Plus, ShieldCheck, Upload } from 'lucide-react';
+import { ChevronRight, Plus, ShieldCheck, SlidersHorizontal, Upload } from 'lucide-react';
 import {
   api,
   errorMessage,
@@ -14,7 +14,10 @@ import { ResourceEditor } from '../features/configuration/ResourceEditor';
 import { CheckPanel } from '../features/configuration/CheckPanel';
 import { ImportDialog } from '../features/configuration/ImportDialog';
 import { ResourceList } from '../features/configuration/ResourceList';
+import { ModelConnectionEditor } from '../features/configuration/models/ModelConnectionEditor';
+import { ModelCheckDialog } from '../features/configuration/models/ModelCheckDialog';
 import { Sidebar } from './Sidebar';
+import { ThemeToggle } from './ThemeToggle';
 
 export function App() {
   const [category, setCategory] = useState<Category>('mcp');
@@ -112,16 +115,13 @@ export function App() {
       />
       <div className="workspace">
         <header className="topbar">
-          <div>
-            <Folder size={16} />
-            <span>工作空间</span>
+          <div className="breadcrumbs">
+            <SlidersHorizontal size={16} />
+            <span>配置中心</span>
             <ChevronRight size={14} />
-            <strong>配置中心</strong>
+            <strong>{current.title}</strong>
           </div>
-          <span className="local-badge">
-            <HardDrive size={13} />
-            本地模式
-          </span>
+          <ThemeToggle />
         </header>
         <main>
           <div className="page-heading">
@@ -135,7 +135,7 @@ export function App() {
               </div>
               <p>{current.subtitle}</p>
             </div>
-            {!isTool && (
+            {!isTool && (resources.length > 0 || !!error) && (
               <div className="button-row">
                 <button onClick={() => setImporting(true)}>
                   <Upload size={16} />
@@ -188,10 +188,6 @@ export function App() {
                 onCreate={() => setEditor('new')}
                 onRefresh={update}
               />
-              <div className="context-note">
-                <Info size={17} />
-                <p>{current.hint}</p>
-              </div>
             </>
           )}
         </main>
@@ -202,7 +198,18 @@ export function App() {
           {notice}
         </div>
       )}
-      {editor && !isTool && (
+      {editor && category === 'models' && (
+        <ModelConnectionEditor
+          resource={editor === 'new' ? undefined : editor}
+          onClose={() => setEditor(null)}
+          onSaved={() => {
+            setEditor(null);
+            setNotice('模型连接已保存');
+            update();
+          }}
+        />
+      )}
+      {editor && !isTool && category !== 'models' && (
         <ResourceEditor
           kind={category as Kind}
           resource={editor === 'new' ? undefined : editor}
@@ -214,9 +221,16 @@ export function App() {
           }}
         />
       )}
-      {checking && (
-        <CheckPanel resource={checking} onClose={() => setChecking(null)} onUpdated={update} />
-      )}
+      {checking &&
+        (checking.kind === 'models' ? (
+          <ModelCheckDialog
+            resource={checking}
+            onClose={() => setChecking(null)}
+            onUpdated={update}
+          />
+        ) : (
+          <CheckPanel resource={checking} onClose={() => setChecking(null)} onUpdated={update} />
+        ))}
       {importing && !isTool && (
         <ImportDialog
           kind={category as Kind}

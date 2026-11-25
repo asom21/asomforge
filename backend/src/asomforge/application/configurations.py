@@ -30,7 +30,10 @@ class ConfigurationService:
 
     def validate(self, kind: Kind, config: dict) -> dict:
         try:
-            return CONFIG_MODELS[kind].model_validate(config).model_dump(mode="json")
+            validated = CONFIG_MODELS[kind].model_validate(config).model_dump(mode="json")
+            if kind == "models" and not validated["models"]:
+                raise ConfigurationError("请至少添加一个模型后再保存或测试")
+            return validated
         except ValidationError as error:
             raise ConfigurationError(validation_message(error)) from error
 
@@ -110,6 +113,7 @@ class ConfigurationService:
                     "revision": resource.revision + 1,
                     "updated_at": datetime.now(UTC),
                     "last_check": None,
+                    "model_checks": {},
                 }
             )
             self.repository.put(updated)
@@ -137,9 +141,19 @@ class ConfigurationService:
                 config[field] = values[reference]
         return config
 
-    def record_check(self, resource: Resource, result: dict) -> None:
+    def record_check(self, resource: Resource, result: dict) -> bool:
         with self.repository.transaction():
-            current = self.repository.get(resource.kind, resource.id)
-            if current.revision == resource.revision:
-                current.last_check = CheckResult.model_validate(result)
-                self.repository.put(current)
+            try:
+                current = self.repository.get(resource.kind, resource.id)
+            except ConfigurationError as error:
+                if error.status == 404:
+                    return False
+                raise
+            if current.revision != resource.revision:
+                return False
+            check = CheckResult.model_validate(result)
+            current.last_check = check
+            if resource.kind == "models" and check.details.get("mode") == "generation":
+                current.model_checks[check.details["model_id"]] = check
+            self.repository.put(current)
+            return True
